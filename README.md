@@ -9,7 +9,7 @@ A fun, enhanced Flappy Bird game built with Phaser 3.
 - **Rocket Obstacles**: Rocket hazards appear after score 5
 - **Sound Effects**: Web Audio API for game sounds (flap, score, collision)
 - **Animated Graphics**: Smooth bird animations and visual effects
-- **Best Score Tracking**: Local storage saves your best score
+- **Score Tracking**: Local storage saves your best score
 - **Responsive Design**: Works on desktop and mobile devices
 
 ## How to Play
