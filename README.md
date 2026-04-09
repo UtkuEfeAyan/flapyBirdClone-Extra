@@ -2,6 +2,10 @@
 
 A fun, enhanced Flappy Bird game built with Phaser 3.
 
+## 🎮 Play Live
+
+**[▶ Play the game here!](https://utkuefayan.github.io/flapyBirdClone-Extra/)**
+
 ## Features
 
 - **Dynamic Difficulty**: Game gets harder as your score increases
