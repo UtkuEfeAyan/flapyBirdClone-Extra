@@ -4,7 +4,7 @@ A fun, enhanced Flappy Bird game built with Phaser 3.
 
 ## 🎮 Play Live
 
-**[▶ Play the game here!](https://utkuefayan.github.io/flapyBirdClone-Extra/)**
+**[▶ Play the game here!](https://utkuefeayan.github.io/flapyBirdClone-Extra/)**
 
 ## Features
 
