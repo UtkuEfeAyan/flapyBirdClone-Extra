@@ -10,11 +10,10 @@ const GRAVITY         = 900;
 
 const BASE_PIPE_SPEED = 180;
 
-const BASE_PIPE_INTERVAL = 1700;
+// Horizontal gap between pipes: current feel ≈ speed × interval (180 × 1.7 ≈ 306)
+const BASE_PIPE_SPACING = 300;
 
 const MIN_PIPE_SPEED  = 340;
-
-const MIN_PIPE_INTERVAL = 900;
 
 
 
@@ -25,8 +24,6 @@ function getDifficulty(score) {
   return {
 
     speed:    BASE_PIPE_SPEED + (MIN_PIPE_SPEED - BASE_PIPE_SPEED) * t,
-
-    interval: BASE_PIPE_INTERVAL - (BASE_PIPE_INTERVAL - MIN_PIPE_INTERVAL) * t,
 
     gapMin:   Math.max(130, 175 - score * 1.2),
 
@@ -129,8 +126,6 @@ class GameScene extends Phaser.Scene {
     this.pipeTimer   = null;
 
     this.rocketTimer = null;
-
-    this.lastInterval = BASE_PIPE_INTERVAL;
 
     this.wavePhase   = Math.random() * Math.PI * 2;
 
@@ -450,7 +445,7 @@ class GameScene extends Phaser.Scene {
 
 
 
-  spawnPipe() {
+  spawnPipe(atX) {
 
     const W    = this.scale.width;
 
@@ -516,7 +511,8 @@ class GameScene extends Phaser.Scene {
 
     this.renderPipe(pipeGfx, topH, botY, botH);
 
-    pipeGfx.x = W;
+    // Place by distance (not always at far right edge)
+    pipeGfx.x = typeof atX === 'number' ? atX : W;
 
 
 
@@ -537,6 +533,44 @@ class GameScene extends Phaser.Scene {
     this.pipeGroup.add(pipeGfx);
 
     this.pipes.push({ gfx: pipeGfx, topH, botY, botH, gap, passed: false, moveDir, moveSpeed, moveDelta, moveRange });
+
+  }
+
+
+
+  /** Keep pipes spaced randomly between 1× and 2× BASE_PIPE_SPACING, starting near the bird. */
+  ensurePipes() {
+
+    const W = this.scale.width;
+
+    const minSpacing = BASE_PIPE_SPACING;
+
+    const maxSpacing = BASE_PIPE_SPACING * 2;
+
+
+
+    if (this.pipes.length === 0) {
+
+      this.spawnPipe(this.birdX + minSpacing);
+
+    }
+
+
+
+    // Fill ahead until the rightmost pipe is past the right edge
+    let guard = 0;
+
+    while (guard++ < 24) {
+
+      const rightmost = Math.max(...this.pipes.map((p) => p.gfx.x));
+
+      if (rightmost >= W) break;
+
+      const spacing = Phaser.Math.Between(minSpacing, maxSpacing);
+
+      this.spawnPipe(rightmost + spacing);
+
+    }
 
   }
 
@@ -720,9 +754,7 @@ class GameScene extends Phaser.Scene {
 
       this.startOverlay.setVisible(false);
 
-      this.schedulePipes();
-
-      this.spawnPipe();
+      this.ensurePipes();
 
       this.scheduleRockets();
 
@@ -737,33 +769,7 @@ class GameScene extends Phaser.Scene {
 
 
   schedulePipes() {
-
-    const diff = getDifficulty(this.score);
-
-    this.lastInterval = diff.interval;
-
-    if (this.pipeTimer) this.pipeTimer.remove();
-
-    this.pipeTimer = this.time.addEvent({
-
-      delay: diff.interval,
-
-      callback: () => {
-
-        this.spawnPipe();
-
-        const newDiff = getDifficulty(this.score);
-
-        if (Math.abs(newDiff.interval - this.lastInterval) > 30) this.schedulePipes();
-
-      },
-
-      callbackScope: this,
-
-      loop: true,
-
-    });
-
+    // Distance-based spawning via ensurePipes() — kept as no-op for safety
   }
 
 
@@ -973,6 +979,10 @@ class GameScene extends Phaser.Scene {
       }
 
     }
+
+
+
+    this.ensurePipes();
 
 
 
