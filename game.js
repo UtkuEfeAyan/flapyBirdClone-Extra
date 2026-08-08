@@ -12,6 +12,8 @@ const BASE_PIPE_SPEED = 180;
 
 // Horizontal gap between pipes: current feel ≈ speed × interval (180 × 1.7 ≈ 306)
 const BASE_PIPE_SPACING = 300;
+// Extra runway before the first pipe so the bird isn't right on top of it
+const FIRST_PIPE_LEAD = Math.round(BASE_PIPE_SPACING * 1.55);
 
 const MIN_PIPE_SPEED  = 340;
 
@@ -551,7 +553,7 @@ class GameScene extends Phaser.Scene {
 
     if (this.pipes.length === 0) {
 
-      this.spawnPipe(this.birdX + minSpacing);
+      this.spawnPipe(this.birdX + FIRST_PIPE_LEAD);
 
     }
 
